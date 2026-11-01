@@ -1,0 +1,19 @@
+# Directorios de trabajo locales de Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfplan
+
+# Credenciales y llaves privadas (¡Muy Importante!)
+*.pem
+*.key
+id_rsa*
+
+# Archivos de variables locales con datos sensibles
+*.tfvars
+!terraform.tfvars.example
+
+# Archivos del sistema operativo
+Thumbs.db
+Desktop.ini
