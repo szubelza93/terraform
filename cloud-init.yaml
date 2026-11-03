@@ -1,0 +1,28 @@
+#cloud-config
+package_update: true
+package_upgrade: false
+
+packages:
+  - git
+  - curl
+  - mysql-server
+
+runcmd:
+  # 1. Instalar Node.js (Versión 20 LTS mediante NodeSource)
+  - curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+  - sudo apt-get install -y nodejs
+
+  # 2. Configurar y asegurar el servicio de MySQL local
+  - sudo systemctl start mysql
+  - sudo systemctl enable mysql
+  - sudo mysql -e "CREATE DATABASE ${db_name};"
+  - sudo mysql -e "CREATE USER '${db_user}'@'localhost' IDENTIFIED BY '${db_password}';"
+  - sudo mysql -e "GRANT ALL PRIVILEGES ON ${db_name}.* TO '${db_user}'@'localhost';"
+  - sudo mysql -e "FLUSH PRIVILEGES;"
+
+  # 3. Clonar el repositorio de GitHub en la rama específica (clase2-backend)
+  - git clone -b clase2-backend https://github.com/PableitorxD/sistemadeasistencia.git /home/ubuntu/sistemadeasistencia
+  - chown -R ubuntu:ubuntu /home/ubuntu/sistemadeasistencia
+
+  # 4. Instalar dependencias del proyecto Node.js como usuario ubuntu
+  - su - ubuntu -c "cd /home/ubuntu/sistemadeasistencia && npm install"

@@ -12,6 +12,7 @@ resource "aws_instance" "frontend" {
   }
 }
 
+/*
 resource "aws_instance" "backend" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = var.instance_type
@@ -19,6 +20,29 @@ resource "aws_instance" "backend" {
   vpc_security_group_ids      = [aws_security_group.backend.id]
   associate_public_ip_address = true 
   key_name                    = aws_key_pair.aws_deployer_key.key_name # <-- Referencia dinámica
+
+  tags = {
+    Name  = "servidor-backend"
+    Layer = "backend"
+  }
+}
+*/
+
+# 2. Servidor EC2: Capa Backend (API Node.js + MySQL con Cloud-Init)
+resource "aws_instance" "backend" {
+  ami                         = data.aws_ami.ubuntu.id
+  instance_type               = var.instance_type
+  subnet_id                   = aws_subnet.backend.id
+  vpc_security_group_ids      = [aws_security_group.backend.id]
+  associate_public_ip_address = true 
+  key_name                    = aws_key_pair.aws_deployer_key.key_name
+
+  # Inyección de configuración automatizada mediante Cloud-Init y Templatefile
+  user_data = templatefile("${path.module}/cloud-init.yaml", {
+    db_name     = "sistemadeasistencia_db"
+    db_user     = "admin_user"
+    db_password = "SecurePassword123!"
+  })
 
   tags = {
     Name  = "servidor-backend"
