@@ -6,13 +6,13 @@ resource "tls_private_key" "rsa_key" {
 
 # 2. Registro de la llave pública en AWS (Proveedor AWS)
 resource "aws_key_pair" "aws_deployer_key" {
-  key_name   = "vps-dos-capas-key-v2"
+  key_name   = var.key_name
   public_key = tls_private_key.rsa_key.public_key_openssh
 }
 
 # 3. Guardar el archivo .pem localmente en tu máquina Windows (Proveedor Local)
 resource "local_file" "ssh_private_key" {
   content         = tls_private_key.rsa_key.private_key_pem
-  filename        = "${path.module}/vps-dos-capas-key-v2.pem"
-  file_permission = "0400" # Restringe permisos (indispensable para clientes SSH)
+  filename        = "./${var.key_name}.pem"
+  file_permission = "0400"
 }

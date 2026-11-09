@@ -1,9 +1,3 @@
-variable "admin_ssh_cidr" {
-  type        = string
-  description = "Direccion IP o bloque CIDR autorizado para conexion SSH (ej. Tu_IP/32)"
-  default     = "0.0.0.0/0" # Cambia esto por tu IP real por seguridad (ej. "200.10.20.30/32")
-}
-
 variable "aws_region" {
   type        = string
   description = "Región de AWS para el despliegue"
@@ -26,6 +20,18 @@ variable "frontend_cidr" {
   type        = string
   description = "Bloque CIDR para la subred del frontend (>50 hosts)"
   default     = "10.0.0.128/26"
+}
+
+variable "database_cidr" {
+  type        = string
+  description = "Bloque CIDR para la subred de la base de datos PostgreSQL"
+  default     = "10.0.0.192/26"
+}
+
+variable "admin_ssh_cidr" {
+  type        = string
+  description = "Direccion IP o bloque CIDR autorizado para conexion SSH (ej. Tu_IP/32)"
+  default     = "0.0.0.0/0" # Cambia esto por tu IP real por seguridad (ej. "200.10.20.30/32")
 }
 
 variable "instance_type" {

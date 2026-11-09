@@ -29,25 +29,45 @@ resource "aws_route_table" "public" {
   }
 }
 
-resource "aws_subnet" "backend" {
-  vpc_id            = aws_vpc.main.id
-  cidr_block        = var.backend_cidr
-  availability_zone = "us-east-1a"
-
-  tags = {
-    Name = "subnet-backend"
-  }
-}
-
+# Subred 1: Frontend
 resource "aws_subnet" "frontend" {
   vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.frontend_cidr
+  cidr_block              = var.frontend_cidr #[cite: 2, 3]
   availability_zone       = "us-east-1a"
   map_public_ip_on_launch = true
 
-  tags = {
-    Name = "subnet-frontend"
-  }
+  tags = { 
+    Name = "subnet-frontend" 
+    }
+}
+
+# Subred 2: Backend
+resource "aws_subnet" "backend" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.backend_cidr #[cite: 2, 3]
+  availability_zone       = "us-east-1a"
+  map_public_ip_on_launch = true
+
+  tags = { 
+    Name = "subnet-backend" 
+    }
+}
+
+# Subred 3: Database (PostgreSQL)
+resource "aws_subnet" "database" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.database_cidr
+  availability_zone       = "us-east-1a"
+  map_public_ip_on_launch = true
+
+  tags = { 
+    Name = "subnet-database" 
+    }
+}
+
+resource "aws_route_table_association" "frontend_assoc" {
+  subnet_id      = aws_subnet.frontend.id
+  route_table_id = aws_route_table.public.id
 }
 
 resource "aws_route_table_association" "backend_assoc" {
@@ -55,7 +75,7 @@ resource "aws_route_table_association" "backend_assoc" {
   route_table_id = aws_route_table.public.id
 }
 
-resource "aws_route_table_association" "frontend_assoc" {
-  subnet_id      = aws_subnet.frontend.id
+resource "aws_route_table_association" "database_assoc" {
+  subnet_id      = aws_subnet.database.id
   route_table_id = aws_route_table.public.id
 }

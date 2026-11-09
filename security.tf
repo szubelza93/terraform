@@ -82,3 +82,35 @@ resource "aws_security_group" "backend" {
     Name = "sg-backend"
   }
 }
+
+# Security Group: Database (PostgreSQL)
+resource "aws_security_group" "database" {
+  name        = "database-tres-capas-sg"
+  description = "Trafico PostgreSQL exclusivo desde Backend"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    description     = "PostgreSQL exclusivo desde Backend"
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = [aws_security_group.backend.id]
+  }
+
+  ingress {
+    description = "SSH administrativo"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [var.admin_ssh_cidr] #[cite: 3]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = { Name = "sg-database" }
+}
